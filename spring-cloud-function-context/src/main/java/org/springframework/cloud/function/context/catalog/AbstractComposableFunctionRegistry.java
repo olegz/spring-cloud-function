@@ -35,6 +35,7 @@ import reactor.core.publisher.Mono;
 import org.springframework.cloud.function.context.FunctionRegistration;
 import org.springframework.cloud.function.context.FunctionRegistry;
 import org.springframework.cloud.function.context.FunctionType;
+import org.springframework.cloud.function.context.config.RoutingFunction;
 import org.springframework.cloud.function.core.FluxConsumer;
 import org.springframework.cloud.function.core.FluxSupplier;
 import org.springframework.cloud.function.core.FluxToMonoFunction;
@@ -292,8 +293,12 @@ public abstract class AbstractComposableFunctionRegistry implements FunctionRegi
 		if (lookup.containsKey(name)) {
 			composedFunction = lookup.get(name);
 		}
-		else if (name.equals("") && lookup.size() == 1) {
-			composedFunction = lookup.values().iterator().next();
+		else if (name.equals("") && lookup.size() <= 2) { // we'll may have 'gateway' function
+			String functionName = lookup.keySet().stream()
+					.filter(n -> !n.equals(RoutingFunction.FUNCTION_NAME))
+					.findFirst()
+					.orElseGet(() -> null);
+			composedFunction = lookup.get(functionName);
 		}
 		else {
 			String[] stages = StringUtils.delimitedListToStringArray(name, "|");

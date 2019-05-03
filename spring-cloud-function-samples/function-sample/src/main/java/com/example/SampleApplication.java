@@ -27,6 +27,7 @@ import org.springframework.cloud.function.compiler.FunctionCompiler;
 import org.springframework.cloud.function.compiler.proxy.LambdaCompilingFunction;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.messaging.Message;
 
 // @checkstyle:off
 @SpringBootApplication
@@ -35,6 +36,14 @@ public class SampleApplication {
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(SampleApplication.class, args);
 	}
+
+	@Bean
+	public Function<Message<String>, Message<String>> echo() {
+		return message -> {
+
+			return message;};
+	}
+
 
 	@Bean
 	public Function<String, String> uppercase() {
